@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Diego Romero/AndroidStudioProjects/test/app/src/main/res/drawable/ic_add_wite_24dp.xml" value="0.2703125" />
+        <entry key="..\:/Users/Diego Romero/AndroidStudioProjects/test/app/src/main/res/layout/activity_main.xml" value="0.1793478260869565" />
+        <entry key="..\:/Users/Diego Romero/AndroidStudioProjects/test/app/src/main/res/layout/layout_listitem.xml" value="0.1793478260869565" />
         <entry key="..\:/Users/Tutusaus8/AndroidStudioProjects/test/app/src/main/res/layout/activity_main.xml" value="0.1661600810536981" />
       </map>
     </option>

@@ -1,45 +1,116 @@
 package com.example.test;
 
-import android.os.Bundle;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+//import android.support.annotation.Nullable;
+//import android.support.design.widget.FloatingActionButton;
+//import android.app.AppCompatActivity;
+import android.os.Bundle;
+//import android.support.v7.widget.LinearLayoutManager;
+//import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
+import androidx.annotation.Nullable;
+import com.example.test.adapters.RecyclerAdapter;
+import com.example.test.models.NicePlace;
+import com.example.test.viewmodel.MainActivityViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import com.example.test.databinding.ActivityMainBinding;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
+    private static final String TAG = "MainActivity";
+
+    private FloatingActionButton mFab;
+    private RecyclerView mRecyclerView;
+    private RecyclerAdapter mAdapter;
+    private ProgressBar mProgressBar;
+    private MainActivityViewModel mMainActivityViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        mFab = findViewById(R.id.fab);
+        mRecyclerView = findViewById(R.id.recycler_view);
+        mProgressBar = findViewById(R.id.progress_bar);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        mMainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+        mMainActivityViewModel.init();
 
-        //funcionamiento github
-        /*
-         * comentario Isaac tutusaus
-         * comentario2 Isaac tutusaus
-         *comentario prueba JORDI AVENTIN
-         *Comentario Prueba Diego Romero
-         */
+        mMainActivityViewModel.getNicePlaces().observe(this, new Observer<List<NicePlace>>() {
+            @Override
+            public void onChanged(@Nullable List<NicePlace> nicePlaces) {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+
+        mMainActivityViewModel.getIsUpdating().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if(aBoolean){
+                    showProgressBar();
+                }
+                else{
+                    hideProgressBar();
+                    mRecyclerView.smoothScrollToPosition(mMainActivityViewModel.getNicePlaces().getValue().size()-1);
+                }
+            }
+        });
+
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMainActivityViewModel.addNewValue(
+                        new NicePlace(
+                                "https://i.imgur.com/ZcLLrkY.jpg",
+                                "Washington"
+                        )
+                );
+            }
+        });
+
+        initRecyclerView();
     }
 
+    private void initRecyclerView(){
+        mAdapter = new RecyclerAdapter(this, mMainActivityViewModel.getNicePlaces().getValue());
+        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void showProgressBar(){
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgressBar(){
+        mProgressBar.setVisibility(View.GONE);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
